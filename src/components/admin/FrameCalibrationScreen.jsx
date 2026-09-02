@@ -1,8 +1,10 @@
 import { useState, useRef } from "react";
+import { useTranslation } from "../../contexts/LanguageContext";
 
 // Reusable calibration screen — matches the "move/resize a red frame over a
 // panorama feed" pattern used by Pit / T-60 / T-12 in the client's PDF spec.
 export function FrameCalibrationScreen({ title, cameras }) {
+  const { t } = useTranslation();
   const [panoTab, setPanoTab] = useState("center");
   const [box, setBox] = useState({ x: 8, y: 15, w: 30, h: 55 }); // percentages
   const dragRef = useRef(null);
@@ -31,7 +33,7 @@ export function FrameCalibrationScreen({ title, cameras }) {
     <div className="bg-zinc-950 text-zinc-100 p-4 rounded-lg border border-zinc-800">
       <h2 className="text-sm font-semibold mb-3">{title}</h2>
       <div className="flex gap-1.5 mb-3">
-        {[["center", "センターパノラマ"], ["1m", "1Mパノラマ"], ["2m", "2Mパノラマ"]].map(([k, l]) => (
+        {[["center", t("calibration.centerPanorama")], ["1m", t("calibration.panorama1m")], ["2m", t("calibration.panorama2m")]].map(([k, l]) => (
           <button key={k} onClick={() => setPanoTab(k)} className={`text-xs px-3 py-1.5 rounded border ${panoTab === k ? "bg-cyan-500 text-zinc-950 border-cyan-500" : "bg-zinc-900 text-zinc-400 border-zinc-800"}`}>{l}</button>
         ))}
       </div>
@@ -39,7 +41,7 @@ export function FrameCalibrationScreen({ title, cameras }) {
         {cam ? (
           <video autoPlay muted playsInline className="w-full h-full object-cover pointer-events-none" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">no camera set — add one from Live Cameras</div>
+          <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">{t("calibration.noCameraSet")}</div>
         )}
         <div
           onMouseDown={(e) => onMouseDown(e, "move")}
@@ -49,10 +51,10 @@ export function FrameCalibrationScreen({ title, cameras }) {
           <div onMouseDown={(e) => { e.stopPropagation(); onMouseDown(e, "resize"); }} className="absolute -right-1.5 -bottom-1.5 w-3 h-3 bg-red-500 rounded-full cursor-nwse-resize" />
         </div>
       </div>
-      <p className="text-[11px] text-zinc-600 mt-2">Move and define the field of view frame position with the mouse.</p>
+      <p className="text-[11px] text-zinc-600 mt-2">{t("calibration.dragHint")}</p>
       <div className="flex justify-end gap-2 mt-4">
-        <button className="px-4 py-1.5 rounded border border-cyan-500 text-cyan-400 text-xs">キャンセル</button>
-        <button className="px-4 py-1.5 rounded bg-cyan-500 text-zinc-950 text-xs font-medium">確定</button>
+        <button className="px-4 py-1.5 rounded border border-cyan-500 text-cyan-400 text-xs">{t("calibration.cancel")}</button>
+        <button className="px-4 py-1.5 rounded bg-cyan-500 text-zinc-950 text-xs font-medium">{t("calibration.confirm")}</button>
       </div>
     </div>
   );

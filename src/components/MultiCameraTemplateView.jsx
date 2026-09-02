@@ -2,10 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { Layers, History, Repeat, RotateCcw } from "lucide-react";
 import { VideoTile } from "./shared/VideoTile";
 import { TEMPLATES, DEFAULT_DELAY_S } from "../constants";
+import { useTranslation } from "../contexts/LanguageContext";
 
 // 1) Multi-camera template view — pick a layout, assign a set of cameras to
 // it, and control Live/Delay/recorded-playback for the WHOLE set at once.
 export function MultiCameraTemplateView({ cameras, lockedTemplate, sharedDelaySeconds, monitorNum, slotCameraNames }) {
+  const { t } = useTranslation();
   const [templateKey, setTemplateKey] = useState(lockedTemplate || "quad");
   const [delaySeconds, setDelaySeconds] = useState(sharedDelaySeconds || DEFAULT_DELAY_S);
   const [groupMode, setGroupMode] = useState({ type: "live", offset: 0, nonce: 0 });
@@ -49,10 +51,10 @@ export function MultiCameraTemplateView({ cameras, lockedTemplate, sharedDelaySe
       <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-cyan-400" />
-          <h2 className="text-sm font-semibold">Camera set — template view{monitorNum ? ` (Monitor ${monitorNum})` : ""}</h2>
+          <h2 className="text-sm font-semibold">{t("template.cameraSet")}{monitorNum ? ` (${t("template.monitor")} ${monitorNum})` : ""}</h2>
           {playbackSource && (
             <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
-              playing recording: {playbackSource.date} · {playbackSource.type} · {playbackSource.race} · #{playbackSource.count}
+              {t("template.playingRecording")} {playbackSource.date} · {playbackSource.type} · {playbackSource.race} · #{playbackSource.count}
             </span>
           )}
         </div>
@@ -66,19 +68,19 @@ export function MultiCameraTemplateView({ cameras, lockedTemplate, sharedDelaySe
             onClick={setGroupDelay}
             className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded font-medium transition ${groupMode.type === "continuous" && !playbackSource ? "bg-violet-500 text-zinc-950" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}
           >
-            <History className="w-3.5 h-3.5" /> Delay all (−{delaySeconds}s)
+            <History className="w-3.5 h-3.5" /> {t("template.delayAll")} (−{delaySeconds}s)
           </button>
           <button
             onClick={setGroupLoop}
             className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded font-medium transition ${groupMode.type === "loop" && !playbackSource ? "bg-amber-500 text-zinc-950" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}
           >
-            <Repeat className="w-3.5 h-3.5" /> Intentional delay
+            <Repeat className="w-3.5 h-3.5" /> {t("template.intentionalDelay")}
           </button>
           <button
             onClick={setGroupLive}
             className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded font-medium transition ${groupMode.type === "live" && !playbackSource ? "bg-cyan-500 text-zinc-950" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Live all
+            <RotateCcw className="w-3.5 h-3.5" /> {t("template.liveAll")}
           </button>
         </div>
       </div>
@@ -105,7 +107,7 @@ export function MultiCameraTemplateView({ cameras, lockedTemplate, sharedDelaySe
         ))}
       </div>
       <p className="text-[11px] text-zinc-600 mt-2">
-        "Delay all" / "Intentional delay" / "Live all" moves every tile in this template together, in one click. When a recording is loaded (from Referee 2's search), every tile shows that race's clip for its own assigned camera.
+        {t("template.hint")}
       </p>
     </div>
   );

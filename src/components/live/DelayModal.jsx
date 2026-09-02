@@ -2,8 +2,10 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { X, RotateCw, History } from "lucide-react";
 import { useHlsVideo } from "../../hooks/useHlsVideo";
 import { accentFor } from "../../constants";
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export function DelayModal({ cam, delaySeconds, onClose, onCpuLog }) {
+  const { t } = useTranslation();
   const videoRef = useRef(null);
   const accent = accentFor(cam.id);
   const [status, setStatus] = useState("starting…");
@@ -89,7 +91,7 @@ export function DelayModal({ cam, delaySeconds, onClose, onCpuLog }) {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full" style={{ background: accent.solid }} />
             <p className="text-sm text-zinc-100 font-medium">{cam.name}</p>
-            <span className="text-xs text-zinc-500">{looping ? `looping last ${delaySeconds}s` : `delayed −${delaySeconds}s, continues forward`}</span>
+            <span className="text-xs text-zinc-500">{looping ? `${t("delayModal.loopingLast")} ${delaySeconds}${t("delayModal.loopingLastSuffix")}` : `${t("delayModal.delayedPrefix")}${delaySeconds}${t("delayModal.delayedSuffix")}`}</span>
           </div>
           <button onClick={onClose} className="text-zinc-500 hover:text-zinc-300"><X className="w-4 h-4" /></button>
         </div>
@@ -99,13 +101,13 @@ export function DelayModal({ cam, delaySeconds, onClose, onCpuLog }) {
             onClick={resync}
             className={`text-xs px-3 py-1.5 rounded font-medium transition ${!looping ? "bg-cyan-500 text-zinc-950" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}
           >
-            Continuous — follows live, −{delaySeconds}s behind
+            {t("delayModal.continuousPrefix")}{delaySeconds}{t("delayModal.continuousSuffix")}
           </button>
           <button
             onClick={startLoopMode}
             className={`text-xs px-3 py-1.5 rounded font-medium transition ${looping ? "bg-violet-500 text-zinc-950" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}
           >
-            Loop last {delaySeconds}s
+            {t("delayModal.loopLastPrefix")}{delaySeconds}{t("delayModal.loopLastSuffix")}
           </button>
         </div>
 
@@ -119,17 +121,17 @@ export function DelayModal({ cam, delaySeconds, onClose, onCpuLog }) {
           <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-sm border border-white/10">
             <History className="w-3.5 h-3.5 text-violet-400" />
             <span className="text-xs font-mono tabular-nums text-violet-300">
-              {looping ? `looping last ${delaySeconds}s` : `−${delaySeconds}s · following live`}
+              {looping ? `${t("delayModal.loopingLast")} ${delaySeconds}${t("delayModal.loopingLastSuffix")}` : `−${delaySeconds}s · ${t("delayModal.followingLive")}`}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 px-4 py-3">
           <button onClick={resync} className="flex items-center gap-1 flex-1 justify-center text-xs py-1.5 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700">
-            <RotateCw className="w-3.5 h-3.5" /> Resync
+            <RotateCw className="w-3.5 h-3.5" /> {t("delayModal.resync")}
           </button>
           <button onClick={onClose} className="flex-1 text-xs py-1.5 rounded bg-cyan-500 text-zinc-950 font-medium hover:bg-cyan-400">
-            Back to live
+            {t("delayModal.backToLive")}
           </button>
         </div>
       </div>

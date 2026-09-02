@@ -3,9 +3,11 @@ import { Play, Pause, SkipBack, SkipForward, Repeat, ExternalLink, Search } from
 import { VideoTile } from "./shared/VideoTile";
 import { SearchResultsModal } from "./shared/SearchResultsModal";
 import { CAMERA_SERVER, DEFAULT_DELAY_S, TIMELINE_MARKERS, HIGHLIGHT_MARKERS } from "../constants";
+import { useTranslation } from "../contexts/LanguageContext";
 
 // Screen 2 — Playback (再生アプリによるレース映像の再生). Referee 2's screen.
 export function PlaybackScreen({ liveCam, delaySeconds = DEFAULT_DELAY_S }) {
+  const { t } = useTranslation();
   const videoRef = useRef(null);
   const [date, setDate] = useState("");
   const [type, setType] = useState("展示");
@@ -48,7 +50,7 @@ export function PlaybackScreen({ liveCam, delaySeconds = DEFAULT_DELAY_S }) {
       const res = await fetch(`${CAMERA_SERVER}/api/recordings?${params.toString()}`);
       const data = await res.json();
       const found = data.results || [];
-      if (found.length === 0) { setSearchError("no matching recording found"); return; }
+      if (found.length === 0) { setSearchError(t("playbackScreen.noMatchFound")); return; }
       // exact match on every field the search form can specify → skip the
       // popup and load it directly; otherwise let the operator pick
       if (date && type && raceNumber && count && found.length === 1) {
@@ -57,7 +59,7 @@ export function PlaybackScreen({ liveCam, delaySeconds = DEFAULT_DELAY_S }) {
         setResults(found);
       }
     } catch {
-      setSearchError("couldn't reach the server");
+      setSearchError(t("playbackScreen.serverError"));
     }
   }, [date, type, raceNumber, count, liveCam]);
 
@@ -87,7 +89,7 @@ export function PlaybackScreen({ liveCam, delaySeconds = DEFAULT_DELAY_S }) {
 
   return (
     <div className="bg-zinc-950 text-zinc-100 p-4 rounded-lg border border-zinc-800">
-      <h2 className="text-sm font-semibold mb-3">Playback — 再生アプリによるレース映像の再生</h2>
+      <h2 className="text-sm font-semibold mb-3">{t("playbackScreen.title")}</h2>
 
       {!loaded && liveCam && (
         <div className="mb-4">
@@ -107,7 +109,7 @@ export function PlaybackScreen({ liveCam, delaySeconds = DEFAULT_DELAY_S }) {
             onPause={() => setIsPlaying(false)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">no recording loaded — search below</div>
+          <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">{t("playbackScreen.noRecordingLoaded")}</div>
         )}
         {lineMarker && loaded && <div className="absolute inset-x-0 top-1/2 border-t border-dashed border-cyan-400/60 pointer-events-none" />}
         {loaded && (
@@ -116,7 +118,7 @@ export function PlaybackScreen({ liveCam, delaySeconds = DEFAULT_DELAY_S }) {
               {loaded.date} · {loaded.type} · {loaded.race} · #{loaded.count}
             </span>
             <button onClick={() => { setLoaded(null); setIsPlaying(false); }} className="px-2 py-1 rounded bg-cyan-500 text-zinc-950 text-[11px] font-semibold">
-              ← Back to Live
+              {t("playbackScreen.backToLive")}
             </button>
           </div>
         )}
@@ -125,53 +127,53 @@ export function PlaybackScreen({ liveCam, delaySeconds = DEFAULT_DELAY_S }) {
 
       <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
         <div>
-          <p className="text-xs text-zinc-500 mb-1.5">検索条件</p>
+          <p className="text-xs text-zinc-500 mb-1.5">{t("playbackScreen.searchConditions")}</p>
           <div className="flex flex-wrap items-end gap-2">
             <div>
-              <label className="text-[11px] text-zinc-500 block">日付</label>
+              <label className="text-[11px] text-zinc-500 block">{t("recordingScreen.date")}</label>
               <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
                 className="bg-zinc-900 border border-zinc-800 rounded px-2 py-1.5 text-xs font-mono" />
             </div>
             <div>
-              <label className="text-[11px] text-zinc-500 block">種別</label>
+              <label className="text-[11px] text-zinc-500 block">{t("recordingScreen.type")}</label>
               <select value={type} onChange={(e) => setType(e.target.value)} className="bg-zinc-900 border border-zinc-800 rounded px-2 py-1.5 text-xs">
                 <option>展示</option><option>本番</option>
               </select>
             </div>
             <div>
-              <label className="text-[11px] text-zinc-500 block">レース番号</label>
+              <label className="text-[11px] text-zinc-500 block">{t("playbackScreen.raceNumber")}</label>
               <select value={raceNumber} onChange={(e) => setRaceNumber(e.target.value)} className="bg-zinc-900 border border-zinc-800 rounded px-2 py-1.5 text-xs">
                 {Array.from({ length: 12 }, (_, i) => `${i + 1}R`).map((n) => <option key={n}>{n}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[11px] text-zinc-500 block">回数</label>
+              <label className="text-[11px] text-zinc-500 block">{t("recordingScreen.count")}</label>
               <select value={count} onChange={(e) => setCount(e.target.value)} className="bg-zinc-900 border border-zinc-800 rounded px-2 py-1.5 text-xs">
                 {["01", "02", "03"].map((n) => <option key={n}>{n}</option>)}
               </select>
             </div>
             <button onClick={search} className="flex items-center gap-1.5 bg-cyan-500 text-zinc-950 text-xs font-medium px-3 py-1.5 rounded">
-              <Search className="w-3.5 h-3.5" /> 検索
+              <Search className="w-3.5 h-3.5" /> {t("playbackScreen.search")}
             </button>
           </div>
           {searchError && <p className="text-xs text-red-400 mt-1.5">{searchError}</p>}
-          <p className="text-[11px] text-zinc-600 mt-1.5">Leave 日付 blank to see every matching race across all dates.</p>
+          <p className="text-[11px] text-zinc-600 mt-1.5">{t("playbackScreen.dateHint")}</p>
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 text-xs space-y-2">
           <div className="flex items-center justify-between gap-4">
-            <span className="text-zinc-400">ラインマーカ</span>
+            <span className="text-zinc-400">{t("playbackScreen.lineMarker")}</span>
             <button onClick={() => setLineMarker((v) => !v)} className={`w-9 h-5 rounded-full relative transition ${lineMarker ? "bg-cyan-500" : "bg-zinc-700"}`}>
               <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition ${lineMarker ? "left-4" : "left-0.5"}`} />
             </button>
           </div>
           <div className="flex items-center justify-between gap-4">
-            <span className="text-zinc-400">リピート再生</span>
+            <span className="text-zinc-400">{t("playbackScreen.repeatPlayback")}</span>
             <input type="number" value={repeatSeconds} onChange={(e) => setRepeatSeconds(Number(e.target.value) || 7)} className="w-14 bg-zinc-950 border border-zinc-800 rounded px-1.5 py-1 font-mono" />
-            <span className="text-zinc-500">秒</span>
+            <span className="text-zinc-500">{t("playbackScreen.seconds")}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-zinc-400">再生速度</span>
+            <span className="text-zinc-400">{t("playbackScreen.playbackSpeed")}</span>
             {[0.5, 1.0, 2.0].map((s) => (
               <label key={s} className="flex items-center gap-1 cursor-pointer">
                 <input type="radio" checked={speed === s} onChange={() => setSpeed(s)} /> {s}x
@@ -210,12 +212,12 @@ export function PlaybackScreen({ liveCam, delaySeconds = DEFAULT_DELAY_S }) {
           <button onClick={() => setMarkerIndex((i) => Math.max(0, i - 1))} className="p-2 rounded bg-zinc-800 hover:bg-zinc-700"><SkipBack className="w-4 h-4" /></button>
           <button onClick={togglePlay} className="p-2 rounded bg-cyan-500 text-zinc-950">{isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}</button>
           <button onClick={() => setMarkerIndex((i) => Math.min(TIMELINE_MARKERS.length - 1, i + 1))} className="p-2 rounded bg-zinc-800 hover:bg-zinc-700"><SkipForward className="w-4 h-4" /></button>
-          <button onClick={() => setRepeatOn((v) => !v)} className={`p-2 rounded ${repeatOn ? "bg-violet-500 text-zinc-950" : "bg-zinc-800 text-zinc-300"}`} title="リピート再生">
+          <button onClick={() => setRepeatOn((v) => !v)} className={`p-2 rounded ${repeatOn ? "bg-violet-500 text-zinc-950" : "bg-zinc-800 text-zinc-300"}`} title={t("playbackScreen.repeatPlayback")}>
             <Repeat className="w-4 h-4" />
           </button>
         </div>
         <button className="flex items-center gap-1.5 text-xs px-3 py-2 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700">
-          <ExternalLink className="w-3.5 h-3.5" /> 外部出力
+          <ExternalLink className="w-3.5 h-3.5" /> {t("playbackScreen.externalOutput")}
         </button>
       </div>
 

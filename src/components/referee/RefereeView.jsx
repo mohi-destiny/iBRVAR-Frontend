@@ -7,12 +7,14 @@ import { MultiCameraTemplateView } from "../MultiCameraTemplateView";
 import { PlaybackScreen } from "../PlaybackScreen";
 import { LiveCamerasTab } from "../live/LiveCamerasTab";
 import { CAMERA_SERVER, DEFAULT_DELAY_S } from "../../constants";
+import { useTranslation } from "../../contexts/LanguageContext";
 
 // Generic referee page — shows only the tabs this specific referee has been
 // granted access to (set by the admin in ユーザ管理). Replaces the old fixed
 // Referee1View/Referee2View split now that referees are add-able and their
 // access is admin-controlled per account.
 export function RefereeView({ user, onLogout }) {
+  const { t } = useTranslation();
   const camState = useCameras();
   const { config } = useSharedConfig();
 
@@ -39,11 +41,11 @@ export function RefereeView({ user, onLogout }) {
   }, [user.username]);
 
   const availableTabs = [
-    access.recording && { key: "recording", label: "録画 Recording" },
-    access.template && { key: "template", label: "Live / Template" },
-    access.template && { key: "race", label: "Race Playback (all monitors)" },
-    access.playback && { key: "playback", label: "Single-camera search" },
-    access.liveCameras && { key: "liveCameras", label: "Live Cameras" },
+    access.recording && { key: "recording", label: t("referee.recordingTab") },
+    access.template && { key: "template", label: t("referee.liveTemplateTab") },
+    access.template && { key: "race", label: t("referee.racePlaybackTab") },
+    access.playback && { key: "playback", label: t("referee.searchTab") },
+    access.liveCameras && { key: "liveCameras", label: t("referee.liveCamerasTab") },
   ].filter(Boolean);
 
   // state for the raw Live Cameras page (add/remove cameras, per-camera
@@ -106,9 +108,9 @@ export function RefereeView({ user, onLogout }) {
   if (!tab) {
     return (
       <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center gap-3">
-        <p className="text-sm text-zinc-400">{user.label} has no pages assigned yet.</p>
-        <p className="text-xs text-zinc-600">Ask an admin to grant access in ユーザ管理.</p>
-        <button onClick={onLogout} className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 mt-2"><LogOut className="w-3.5 h-3.5" /> Logout</button>
+        <p className="text-sm text-zinc-400">{user.label} {t("referee.noPagesAssigned")}</p>
+        <p className="text-xs text-zinc-600">{t("referee.askAdmin")}</p>
+        <button onClick={onLogout} className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 mt-2"><LogOut className="w-3.5 h-3.5" /> {t("common.logout")}</button>
       </div>
     );
   }
@@ -127,9 +129,9 @@ export function RefereeView({ user, onLogout }) {
             </select>
           )}
           {tab === "template" && (
-            <button onClick={() => openTemplateInNewTab(monitorNum)} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700"><ExternalLink className="w-3.5 h-3.5" /> Open in new tab</button>
+            <button onClick={() => openTemplateInNewTab(monitorNum)} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700"><ExternalLink className="w-3.5 h-3.5" /> {t("referee.openInNewTab")}</button>
           )}
-          <button onClick={onLogout} className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 ml-2"><LogOut className="w-3.5 h-3.5" /> Logout</button>
+          <button onClick={onLogout} className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 ml-2"><LogOut className="w-3.5 h-3.5" /> {t("common.logout")}</button>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Hls from "hls.js";
 import { History, Repeat } from "lucide-react";
+import { useTranslation } from "../../contexts/LanguageContext";
 
 // Reusable live/Delay/Intentional-Delay control — embeddable directly on a
 // page (not a modal). Used by both the Playback screen (Referee 2) and the
@@ -11,6 +12,7 @@ import { History, Repeat } from "lucide-react";
 //     moment of the click, then loops [that point - delaySeconds, that
 //     point] forever until Back to Live is pressed.
 export function LiveDelayPanel({ cam, delaySeconds, disabled, disabledReason, extraOverlay, videoClassName }) {
+  const { t } = useTranslation();
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
   const [status, setStatus] = useState("starting…");
@@ -88,7 +90,7 @@ export function LiveDelayPanel({ cam, delaySeconds, disabled, disabledReason, ex
     <div>
       <div className={`relative bg-black rounded overflow-hidden aspect-video mb-3 ${videoClassName || ""}`}>
         {cam ? <video ref={videoRef} className="w-full h-full object-contain" muted playsInline /> : (
-          <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">no camera set</div>
+          <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">{t("liveDelay.noCameraSet")}</div>
         )}
         {cam && !isPlaying && (
           <div className="absolute inset-0 flex items-center justify-center bg-black">
@@ -97,25 +99,25 @@ export function LiveDelayPanel({ cam, delaySeconds, disabled, disabledReason, ex
         )}
         {cam && isPlaying && (
           <div className="absolute top-2 left-2 px-2 py-1 rounded bg-black/65 text-[11px] font-mono">
-            {mode === "live" && <span className="text-cyan-300">● LIVE</span>}
-            {mode === "continuous" && <span className="text-violet-300">−{delaySeconds}s · following live</span>}
-            {mode === "loop" && <span className="text-amber-300">looping last {delaySeconds}s (intentional delay)</span>}
+            {mode === "live" && <span className="text-cyan-300">● {t("liveDelay.live")}</span>}
+            {mode === "continuous" && <span className="text-violet-300">−{delaySeconds}s · {t("liveDelay.followingLive")}</span>}
+            {mode === "loop" && <span className="text-amber-300">{t("liveDelay.loopingLast")} {delaySeconds}s {t("liveDelay.intentionalDelayNote")}</span>}
           </div>
         )}
         {extraOverlay}
       </div>
       <div className="flex items-center gap-2">
         <button onClick={goDelay} disabled={disabled || !cam} className="text-xs px-3 py-1.5 rounded font-medium transition bg-zinc-800 text-zinc-300 hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed">
-          <History className="w-3.5 h-3.5 inline mr-1" /> Delay (−{delaySeconds}s)
+          <History className="w-3.5 h-3.5 inline mr-1" /> {t("liveDelay.delay")} (−{delaySeconds}s)
         </button>
         <button onClick={goIntentionalDelay} disabled={disabled || !cam} className="text-xs px-3 py-1.5 rounded font-medium transition bg-zinc-800 text-zinc-300 hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed">
-          <Repeat className="w-3.5 h-3.5 inline mr-1" /> Intentional Delay
+          <Repeat className="w-3.5 h-3.5 inline mr-1" /> {t("liveDelay.intentionalDelay")}
         </button>
         <button onClick={goLive} disabled={disabled || !cam || mode === "live"} className="text-xs px-3 py-1.5 rounded font-medium transition bg-cyan-500 text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed">
-          Back to Live
+          {t("liveDelay.backToLive")}
         </button>
       </div>
-      {disabled && <p className="text-[11px] text-zinc-600 mt-1.5">{disabledReason || "Delay controls are unavailable right now."}</p>}
+      {disabled && <p className="text-[11px] text-zinc-600 mt-1.5">{disabledReason || t("liveDelay.disabledWhileRecording")}</p>}
     </div>
   );
 }

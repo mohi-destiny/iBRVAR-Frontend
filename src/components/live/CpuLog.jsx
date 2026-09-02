@@ -1,7 +1,9 @@
 import { useRef, useEffect } from "react";
 import { Terminal } from "lucide-react";
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export function CpuLog({ entries }) {
+  const { t } = useTranslation();
   const boxRef = useRef(null);
   useEffect(() => {
     if (boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
@@ -10,11 +12,11 @@ export function CpuLog({ entries }) {
     <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
       <div className="flex items-center gap-2 px-3 py-2 border-b border-zinc-800">
         <Terminal className="w-3.5 h-3.5 text-zinc-500" />
-        <p className="text-xs text-zinc-400 font-medium">Delay seek timing</p>
-        <span className="text-xs text-zinc-600">— logs every time a Delay/Resync click seeks a camera</span>
+        <p className="text-xs text-zinc-400 font-medium">{t("cpuLog.title")}</p>
+        <span className="text-xs text-zinc-600">{t("cpuLog.subtitle")}</span>
       </div>
       <div ref={boxRef} className="h-40 overflow-y-auto px-3 py-2 font-mono text-xs space-y-1">
-        {entries.length === 0 && <p className="text-zinc-600">Click Delay on a camera to see seek timing here…</p>}
+        {entries.length === 0 && <p className="text-zinc-600">{t("cpuLog.empty")}</p>}
         {entries.map((e) => (
           <div key={e.key} className="flex items-center gap-2 text-zinc-400">
             <span className="text-zinc-600">{e.time}</span>

@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { X, History, Radio, HardDrive } from "lucide-react";
 import { useHlsVideo } from "../../hooks/useHlsVideo";
 import { accentFor, fmtClock } from "../../constants";
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export function CameraCard({ cam, now, onRemove, onOpenDelay, delaySeconds }) {
+  const { t } = useTranslation();
   const videoRef = useRef(null);
   const accent = accentFor(cam.id);
   const startRef = useRef(null);
@@ -54,7 +56,7 @@ export function CameraCard({ cam, now, onRemove, onOpenDelay, delaySeconds }) {
         <video ref={videoRef} className="w-full h-full object-contain" muted playsInline />
         {(startRef.current === null || stale) && (
           <div className="absolute inset-0 bg-black flex items-center justify-center text-center px-4 z-10">
-            <p className="text-xs font-mono text-amber-300">{stale ? "no live signal" : status}</p>
+            <p className="text-xs font-mono text-amber-300">{stale ? t("cameraCard.noLiveSignal") : status}</p>
           </div>
         )}
         {startRef.current !== null && !stale && (
@@ -65,7 +67,7 @@ export function CameraCard({ cam, now, onRemove, onOpenDelay, delaySeconds }) {
             </div>
             <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-md bg-black/65 backdrop-blur-sm border border-white/10">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-              <span className="text-xs font-mono text-cyan-300">LIVE</span>
+              <span className="text-xs font-mono text-cyan-300">{t("cameraCard.live")}</span>
             </div>
           </>
         )}
@@ -77,15 +79,15 @@ export function CameraCard({ cam, now, onRemove, onOpenDelay, delaySeconds }) {
         className="flex items-center justify-center gap-1.5 mx-3 mt-2 text-xs py-1.5 rounded transition disabled:opacity-40 disabled:cursor-not-allowed"
         style={{ background: accent.soft, border: `1px solid ${accent.border}`, color: accent.solid }}
       >
-        <History className="w-3.5 h-3.5" /> {delayReady ? "Delay" : `Delay (ready in ${secondsUntilReady}s)`}
+        <History className="w-3.5 h-3.5" /> {delayReady ? t("cameraCard.delay") : `${t("cameraCard.delayReadyIn")} ${secondsUntilReady}${t("cameraCard.seconds")}`}
       </button>
 
       <div className="flex items-center gap-1.5 px-3 py-2 text-xs font-mono text-zinc-500">
         <Radio className="w-3 h-3 text-cyan-400 shrink-0" />
-        <span>broadcast</span>
+        <span>{t("cameraCard.broadcast")}</span>
         <span className="text-zinc-700">·</span>
         <HardDrive className="w-3 h-3 text-teal-400 shrink-0" />
-        <span className="text-teal-400">recording on server</span>
+        <span className="text-teal-400">{t("cameraCard.recordingOnServer")}</span>
       </div>
     </div>
   );

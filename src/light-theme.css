@@ -1,61 +1,87 @@
-/* ---------------------------------------------------------------------
-   Light mode overrides.
-   Every component in this app was written with dark colors (bg-zinc-950,
-   text-zinc-100, etc.) as literal Tailwind classes rather than the dark:/
-   light: variant system — rewriting every component individually would be
-   a huge, risky change. Instead, this block recolors those exact class
-   names whenever <html data-theme="light"> is set, so switching themes
-   works everywhere at once without touching any component file.
-   Append this to the END of your existing src/index.css (after the
-   Tailwind import), don't replace the whole file.
---------------------------------------------------------------------- */
+
 
 [data-theme="light"] {
   color-scheme: light;
 }
 
-/* Page/panel backgrounds, darkest to lightest in the dark palette map to
-   lightest to darkest here */
+/* ---- Backgrounds (darkest dark-mode surface -> lightest light-mode surface) ---- */
 [data-theme="light"] .bg-zinc-950 { background-color: #ffffff !important; }
 [data-theme="light"] .bg-zinc-900 { background-color: #f4f4f5 !important; }
 [data-theme="light"] .bg-zinc-800 { background-color: #e4e4e7 !important; }
 [data-theme="light"] .bg-zinc-700 { background-color: #d4d4d8 !important; }
-
-/* Hover/active variants used throughout (hover:bg-zinc-700 / hover:bg-zinc-800 etc.) */
+[data-theme="light"] .bg-zinc-600 { background-color: #a1a1aa !important; }
 [data-theme="light"] .hover\:bg-zinc-700:hover { background-color: #d4d4d8 !important; }
 [data-theme="light"] .hover\:bg-zinc-800:hover { background-color: #e4e4e7 !important; }
 
-/* Text colors */
+/* ---- Body/label text ---- */
 [data-theme="light"] .text-zinc-100 { color: #18181b !important; }
 [data-theme="light"] .text-zinc-200 { color: #27272a !important; }
 [data-theme="light"] .text-zinc-300 { color: #3f3f46 !important; }
 [data-theme="light"] .text-zinc-400 { color: #52525b !important; }
 [data-theme="light"] .text-zinc-500 { color: #71717a !important; }
-[data-theme="light"] .text-zinc-600 { color: #a1a1aa !important; }
+[data-theme="light"] .text-zinc-600 { color: #9f9fa8 !important; }
 [data-theme="light"] .text-zinc-700 { color: #d4d4d8 !important; }
+[data-theme="light"] .text-zinc-900 { color: #18181b !important; }
+/* text-zinc-950 intentionally left unchanged — see note above */
 
-/* Borders */
+/* ---- Borders ---- */
+[data-theme="light"] .border-zinc-950 { border-color: #e4e4e7 !important; }
 [data-theme="light"] .border-zinc-800 { border-color: #d4d4d8 !important; }
 [data-theme="light"] .border-zinc-700 { border-color: #a1a1aa !important; }
+[data-theme="light"] .border-zinc-200 { border-color: #52525b !important; }
+[data-theme="light"] .border-zinc-100 { border-color: #71717a !important; }
 
-/* Translucent black overlays (badges over video, modal backdrops) stay
-   dark-on-video since the video itself is still black, but bump opacity
-   down slightly so they read correctly against a lighter surrounding page */
+/* ---- Accent colors: keep the same hue but shift toward a shade that
+   still has enough contrast against a WHITE page (the dark-mode shades
+   were tuned for a black background) ---- */
+[data-theme="light"] .text-cyan-300 { color: #0891b2 !important; }
+[data-theme="light"] .text-cyan-400 { color: #0891b2 !important; }
+[data-theme="light"] .text-cyan-600 { color: #0e7490 !important; }
+[data-theme="light"] .text-violet-300 { color: #7c3aed !important; }
+[data-theme="light"] .text-violet-400 { color: #7c3aed !important; }
+[data-theme="light"] .text-amber-300 { color: #b45309 !important; }
+[data-theme="light"] .text-amber-400 { color: #b45309 !important; }
+[data-theme="light"] .text-red-400 { color: #dc2626 !important; }
+[data-theme="light"] .text-teal-400 { color: #0d9488 !important; }
+
+/* bg-cyan-500 / bg-violet-500 / bg-amber-500 / bg-red-500 (solid, full-opacity
+   accent buttons/badges) already have enough contrast against white and are
+   NOT overridden — only their translucent (/10, /20) tint variants, which
+   were tuned to sit on black, get adjusted */
+[data-theme="light"] .bg-cyan-500\/10 { background-color: rgba(6, 182, 212, 0.12) !important; }
+[data-theme="light"] .bg-cyan-500\/20 { background-color: rgba(6, 182, 212, 0.18) !important; }
+[data-theme="light"] .bg-amber-500\/20 { background-color: rgba(245, 158, 11, 0.18) !important; }
+
+[data-theme="light"] .border-cyan-400 { border-color: #0891b2 !important; }
+[data-theme="light"] .border-cyan-500 { border-color: #0891b2 !important; }
+[data-theme="light"] .border-amber-500 { border-color: #b45309 !important; }
+[data-theme="light"] .border-red-500 { border-color: #dc2626 !important; }
+
+/* ---- Translucent black overlays (badges over video, modal backdrops)
+   stay dark since the video itself is still black regardless of theme ---- */
 [data-theme="light"] .bg-black\/60,
 [data-theme="light"] .bg-black\/65,
 [data-theme="light"] .bg-black\/70,
 [data-theme="light"] .bg-black\/80 {
   background-color: rgba(0, 0, 0, 0.55) !important;
 }
+/* .bg-black (fully opaque, used for video containers/letterboxing) is left
+   unchanged on purpose — camera feeds should stay on a black background in
+   both themes, this is not page chrome. */
 
-/* Disabled-state opacity classes read oddly if left unchanged on a light
-   background — slightly increase contrast */
+/* ---- Form controls: browsers render <input>/<select> with their own
+   default background+text, which can end up illegible if only the
+   surrounding classes were overridden above ---- */
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  color-scheme: light;
+}
+[data-theme="light"] .placeholder-zinc-600::placeholder { color: #9f9fa8 !important; }
+[data-theme="light"] .focus\:ring-cyan-400:focus { --tw-ring-color: #0891b2 !important; }
+
+/* ---- Disabled-state opacity reads oddly on a light background ---- */
 [data-theme="light"] .disabled\:opacity-40:disabled,
 [data-theme="light"] .disabled\:opacity-50:disabled {
-  opacity: 0.5 !important;
+  opacity: 0.45 !important;
 }
-
-/* NOTE: video elements, camera feed backgrounds (bg-black on the video
-   tiles themselves), and brand accent colors (cyan/violet/amber/red) are
-   intentionally left unchanged in light mode — a black video letterbox
-   and colored status badges look correct on either background. */
